@@ -10,7 +10,7 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
-import { initialRestaurantsData, initialReviewsData } from '@/lib/localStorage'; 
+import { initialRestaurantsData, initialReviewsData } from '@/lib/localStorage';
 import type { Restaurant, Review } from '@/types';
 
 // Tool to get restaurant information
@@ -99,9 +99,9 @@ const getRestaurantReviewsTool = ai.defineTool(
 
 // Chatbot flow schemas
 const ChatbotMessagePartSchema = z.object({ text: z.string() });
-const ChatbotMessageSchema = z.object({ 
+const ChatbotMessageSchema = z.object({
     role: z.enum(['user', 'model']),
-    parts: z.array(ChatbotMessagePartSchema) // This is 'parts' for the input schema
+    parts: z.array(ChatbotMessagePartSchema)
 });
 
 const ChatbotInputSchema = z.object({
@@ -163,40 +163,41 @@ const restaurantChatbotFlow = ai.defineFlow(
     outputSchema: ChatbotOutputSchema,
   },
   async (input) => {
-    // Genkit expects messages with 'content' field, not 'parts'
-    const genkitMessages: Array<{ role: 'user' | 'model'; content: Array<{text: string}> }> = [];
-    
-    if (input.chatHistory) {
-        input.chatHistory.forEach(msg => {
-            // msg.parts comes from ChatbotInputSchema (which uses ChatbotMessageSchema)
-            // Ensure msg.parts is an array and each part has a text string.
-            const CMFlowMessageParts = (msg.parts || []).map(part => ({ 
-              text: typeof part.text === 'string' ? part.text : '' 
-            }));
-            
-            genkitMessages.push({
-                role: msg.role,
-                // Ensure content is not an empty array; provide a default part if CMFlowMessageParts is empty.
-                content: CMFlowMessageParts.length > 0 ? CMFlowMessageParts : [{ text: '' }]
-            });
-        });
-    }
-    
+    // Genkit expects messages with 'content' field, not 'parts' which is used in ChatbotInputSchema for history.
+    // Convert chatHistory from {role, parts:[{text}]} to {role, content:[{text}]}
+    const historyGenkitMessages: Array<{ role: 'user' | 'model'; content: Array<{text: string}> }> =
+      input.chatHistory?.map(msg => {
+        // Ensure msg.parts is an array and each part has a text string.
+        const messageContentParts = (msg.parts || []).map(part => ({
+          text: typeof part.text === 'string' ? part.text : '',
+        }));
+        return {
+          role: msg.role,
+          // Ensure content is not an empty array; provide a default part if messageContentParts is empty.
+          content: messageContentParts.length > 0 ? messageContentParts : [{ text: '' }],
+        };
+      }) || []; // Default to empty array if input.chatHistory is undefined
+
     // Process current user message
     let textForCurrentUserMessage = typeof input.userMessage === 'string' ? input.userMessage : '';
     // Workaround: if the text is empty or only whitespace, send a single space.
     // This is to test if Genkit has an issue with completely empty text parts like {text: ""}.
     if (textForCurrentUserMessage.trim() === '') {
-        textForCurrentUserMessage = ' '; 
+        textForCurrentUserMessage = ' ';
     }
-    genkitMessages.push({ role: 'user', content: [{text: textForCurrentUserMessage}] });
+    const currentUserGenkitMessage = {
+      role: 'user' as const, // Use 'as const' for literal type
+      content: [{ text: textForCurrentUserMessage }],
+    };
+
+    const allMessagesForGenkit = [...historyGenkitMessages, currentUserGenkitMessage];
 
     const result = await ai.generate({
-        prompt: restaurantChatbotPrompt, 
-        messages: genkitMessages,        
+        prompt: restaurantChatbotPrompt,
+        messages: allMessagesForGenkit,
     });
-    
-    const responseText = result.text; 
+
+    const responseText = result.text;
     return { botResponse: responseText };
   }
 );

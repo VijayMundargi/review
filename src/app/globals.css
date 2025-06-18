@@ -94,13 +94,51 @@
     --sidebar-border: 10 30% 30%;
     --sidebar-ring: 10 45% 60%;
   }
-}
 
-@layer base {
+  /* Base styles */
   * {
     @apply border-border;
   }
+
+  html {
+    position: relative;
+    min-height: 100%;
+  }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground; /* This will apply to the content layer */
+    position: relative; /* Establishes a stacking context */
+    z-index: 0; /* Base stacking index for body content */
+  }
+
+  body::before { /* Background image layer */
+    content: "";
+    position: fixed; /* Fixed to viewport */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('https://placehold.co/1920x1080.png'); /* Placeholder image */
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed; /* Keeps background fixed during scroll */
+    z-index: -2; /* Positioned behind the overlay and body content */
+  }
+
+  body::after { /* Semi-transparent overlay layer */
+    content: "";
+    position: fixed; /* Fixed to viewport */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: hsla(20, 15%, 20%, 0.65); /* Dark, warm gray overlay (65% opacity) for light mode */
+    z-index: -1; /* Positioned between the background image and body content */
+  }
+
+  /* Adjust overlay for dark mode for better contrast if needed */
+  .dark body::after {
+    background-color: rgba(0, 0, 0, 0.7); /* A slightly more opaque black overlay for dark mode */
   }
 }

@@ -29,7 +29,7 @@ export function ChatbotWidget() {
   const initialBotMessage: Message = {
     id: 'initial-bot-message',
     sender: 'bot',
-    text: "Hello! I'm the Gadag Grub Guide assistant. How can I help you find a great restaurant today?",
+    text: "Hi! I’m your food guide for Gadag 🍽️. Want to check out restaurants, read reviews, or leave a review?",
     timestamp: new Date(),
   };
 
@@ -62,21 +62,19 @@ export function ChatbotWidget() {
       timestamp: new Date(),
     };
     
-    // Add user message to local state first
     setMessages(prev => [...prev, newUserMessage]);
-    const currentInputValue = inputValue; // Capture before clearing
+    const currentInputValue = inputValue; 
     setInputValue('');
     setIsLoading(true);
 
     try {
-      // Prepare chat history for Genkit flow (all messages *before* the current new user message)
       const historyForFlow = messages.map(msg => ({
         role: msg.sender === 'user' ? 'user' : ('model' as 'user' | 'model'),
         parts: [{ text: msg.text }],
       }));
 
       const inputForFlow: ChatbotInput = {
-        userMessage: currentInputValue, // The new message being sent
+        userMessage: currentInputValue, 
         chatHistory: historyForFlow 
       };
       
@@ -103,7 +101,6 @@ export function ChatbotWidget() {
     }
   };
   
-  // Effect to focus input after loading is false and sheet is open
   useEffect(() => {
     if (isOpen && !isLoading && inputRef.current) {
       inputRef.current.focus();

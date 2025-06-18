@@ -14,6 +14,20 @@ export const initialRestaurantsData: Restaurant[] = [
   { id: '5', name: 'Swathi Family Restaurant', cuisine: 'Indo-Chinese', description: 'Delicious Indo-Chinese fusion cuisine, offering a mix of spicy Schezwan dishes and popular Chinese favorites adapted to Indian tastes.', image: 'https://placehold.co/600x400.png', dataAiHint: 'chinese food', aiSuggestedDescription: '', aiReasoning: '' }
 ];
 
+export const initialReviewsData: Review[] = [
+  { id: 'r1', restaurantId: '1', userId: 'user123', username: 'FoodieGal', title: 'Amazing Dosa!', text: 'Loved the masala dosa at Hotel Shivaratna! Crispy and flavorful.', rating: 4, date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString() },
+  { id: 'r1a', restaurantId: '1', userId: 'user456', username: 'CriticBob', title: 'Good, not great', text: 'Masala dosa was decent, service was quick. Could be spicier.', rating: 3, date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString() },
+  { id: 'r2', restaurantId: '1', userId: 'user456', username: 'BiryaniKing', title: 'Decent South Indian', text: 'The idlis were soft, but the sambar could be better.', rating: 3, date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString() },
+  { id: 'r3', restaurantId: '2', userId: 'user789', username: 'FamilyDiner', title: 'Great for Families', text: 'Great ambiance and paneer tikka at Nisarga! Kids loved the garden.', rating: 5, date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString() },
+  { id: 'r4', restaurantId: '2', userId: 'user101', username: 'QuickBite', title: 'Good food, slow service', text: 'The North Indian dishes were tasty, but service was a bit slow during peak hours.', rating: 3, date: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString() },
+  { id: 'r4a', restaurantId: '2', userId: 'user102', username: 'AnnoyedEater', title: 'Too Slow', text: 'Waited ages for our food. Not coming back on a weekend.', rating: 2, date: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString() },
+  { id: 'r5', restaurantId: '4', userId: 'user202', username: 'VegLover', title: 'Authentic Thali', text: 'Best vegetarian thali in town! So many varieties and authentic taste.', rating: 5, date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString() },
+  { id: 'r6', restaurantId: '4', userId: 'user303', username: 'LocalExplorer', title: 'Bit Crowded', text: 'Decent Udupi food, but the place gets a bit crowded during lunch.', rating: 3, date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString() },
+  { id: 'r7', restaurantId: '3', userId: 'user303', username: 'SpiceQueen', title: 'Delicious Biryani', text: 'The biryani here is a must-try! Perfectly spiced.', rating: 5, date: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString() },
+  { id: 'r8', restaurantId: '5', userId: 'user303', username: 'NoodleFan', title: 'Yummy Noodles', text: 'Schezwan noodles were fantastic. Good portion size too.', rating: 4, date: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString() },
+];
+
+
 // Generic getter
 function getItems<T>(key: string, defaultValue: T[] = []): T[] {
   if (typeof window === 'undefined') return defaultValue;
@@ -44,7 +58,6 @@ export const setUsers = (users: User[]): void => setItems<User>(USERS_KEY, users
 export const getRestaurants = (): Restaurant[] => {
   const restaurants = getItems<Restaurant>(RESTAURANTS_KEY, []);
   if (restaurants.length === 0 && typeof window !== 'undefined') {
-    // Initialize with default data if localStorage is empty
     setItems<Restaurant>(RESTAURANTS_KEY, initialRestaurantsData);
     return initialRestaurantsData;
   }
@@ -63,12 +76,19 @@ export const updateRestaurant = (updatedRestaurant: Restaurant): void => {
 
 
 // Reviews
-export const getReviews = (): Review[] => getItems<Review>(REVIEWS_KEY);
+export const getReviews = (): Review[] => {
+    const reviews = getItems<Review>(REVIEWS_KEY, []);
+    if (reviews.length === 0 && typeof window !== 'undefined') {
+        setItems<Review>(REVIEWS_KEY, initialReviewsData);
+        return initialReviewsData;
+    }
+    return reviews;
+};
 export const setReviews = (reviews: Review[]): void => setItems<Review>(REVIEWS_KEY, reviews);
 export const getReviewsForRestaurant = (restaurantId: string): Review[] => getReviews().filter(review => review.restaurantId === restaurantId);
 export const addReview = (review: Review): void => {
   const reviews = getReviews();
-  setReviews([review, ...reviews]); // Add new review to the beginning
+  setReviews([review, ...reviews]); 
 };
 
 // Current User (Session)
@@ -95,7 +115,12 @@ export const setCurrentUser = (user: User | null): void => {
   }
 }
 
-// Initialize restaurants if not already present
-if (typeof window !== 'undefined' && !localStorage.getItem(RESTAURANTS_KEY)) {
-  localStorage.setItem(RESTAURANTS_KEY, JSON.stringify(initialRestaurantsData));
+// Initialize data if not already present
+if (typeof window !== 'undefined') {
+    if (!localStorage.getItem(RESTAURANTS_KEY)) {
+        localStorage.setItem(RESTAURANTS_KEY, JSON.stringify(initialRestaurantsData));
+    }
+    if (!localStorage.getItem(REVIEWS_KEY)) {
+        localStorage.setItem(REVIEWS_KEY, JSON.stringify(initialReviewsData));
+    }
 }

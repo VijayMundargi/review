@@ -99,7 +99,7 @@ const getRestaurantReviewsTool = ai.defineTool(
 
 // Chatbot flow schemas
 const ChatbotMessagePartSchema = z.object({ text: z.string() });
-export const ChatbotMessageSchema = z.object({ // Export this for client-side type usage
+const ChatbotMessageSchema = z.object({ // Not exported anymore
     role: z.enum(['user', 'model']),
     parts: z.array(ChatbotMessagePartSchema)
 });
@@ -172,7 +172,7 @@ const restaurantChatbotFlow = ai.defineFlow(
         }));
         return {
           role: msg.role, // 'user' or 'model'
-          content: messageContentParts.length > 0 ? messageContentParts : [{ text: '' }],
+          content: messageContentParts.length > 0 ? messageContentParts : [{ text: '' }], // Ensure content always has at least one part
         };
       });
 
@@ -183,7 +183,7 @@ const restaurantChatbotFlow = ai.defineFlow(
     const currentMessageText = userMessageString === '' ? ' ' : userMessageString;
     
     const currentUserGenkitMessage = {
-      role: 'user' as const, // Explicitly 'user' role for the current message
+      role: 'user', 
       content: [{ text: currentMessageText }],
     };
 

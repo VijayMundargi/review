@@ -7,7 +7,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter, SheetClose }
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { MessageCircle, Send, Bot, User, Loader2, X } from 'lucide-react';
-import { chatWithBot, type ChatbotInput, type ChatbotMessageSchema as GenkitChatbotMessageSchema } from '@/ai/flows/restaurant-chatbot-flow';
+import { chatWithBot, type ChatbotInput } from '@/ai/flows/restaurant-chatbot-flow';
+import type { ClientChatbotMessage } from '@/types'; // Import ClientChatbotMessage
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 
@@ -27,7 +28,7 @@ export function ChatbotWidget() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const initialBotMessage: Message = {
-    id: 'initial-bot-message-' + Date.now(), // Ensure unique ID if widget re-mounts
+    id: 'initial-bot-message-' + Date.now(),
     sender: 'bot',
     text: "Hi! I’m your food guide for Gadag 🍽️. Want to check out restaurants, read reviews, or leave a review?",
     timestamp: new Date(),
@@ -35,8 +36,6 @@ export function ChatbotWidget() {
 
   useEffect(() => {
     if (isOpen && messages.length === 0 && !isLoading) {
-      // Only add initial message if no messages exist at all
-      // This prevents re-adding if sheet is closed and reopened without clearing state
       if (!messages.some(m => m.id.startsWith('initial-bot-message'))) {
         setMessages([initialBotMessage]);
       }
@@ -67,13 +66,12 @@ export function ChatbotWidget() {
       timestamp: new Date(),
     };
     
-    // History sent to the backend should be the 'messages' state *before* adding the current userText.
-    const historyForGenkitFlow: GenkitChatbotMessageSchema[] = messages.map(msg => ({
-        role: msg.sender === 'user' ? 'user' : 'model', // Genkit uses 'model' for bot
+    // Use ClientChatbotMessage type for history sent to the backend
+    const historyForGenkitFlow: ClientChatbotMessage[] = messages.map(msg => ({
+        role: msg.sender === 'user' ? 'user' : 'model', 
         parts: [{ text: msg.text }],
     }));
 
-    // Update UI state immediately for responsiveness
     setMessages(prev => [...prev, newUserMessage]);
     setInputValue('');
     setIsLoading(true);

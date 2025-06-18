@@ -27,3 +27,13 @@ export interface Review {
   rating: number; // 1-5
   date: string; // ISO string
 }
+
+// Type for messages used in the ChatbotWidget client component
+export interface ClientChatbotMessagePart {
+  text: string;
+}
+
+export interface ClientChatbotMessage {
+  role: 'user' | 'model';
+  parts: ClientChatbotMessagePart[];
+}

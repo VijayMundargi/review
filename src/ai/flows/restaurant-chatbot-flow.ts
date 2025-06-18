@@ -99,14 +99,14 @@ const getRestaurantReviewsTool = ai.defineTool(
 
 // Chatbot flow schemas
 const ChatbotMessagePartSchema = z.object({ text: z.string() });
-const ChatbotMessageSchema = z.object({
+export const ChatbotMessageSchema = z.object({ // Export this for client-side type usage
     role: z.enum(['user', 'model']),
     parts: z.array(ChatbotMessagePartSchema)
 });
 
 const ChatbotInputSchema = z.object({
   userMessage: z.string().describe('The message from the user to the chatbot.'),
-  chatHistory: z.array(ChatbotMessageSchema).optional().describe('The history of the conversation, if any, with user and model (bot) roles.')
+  chatHistory: z.array(ChatbotMessageSchema).optional().describe('The history of the conversation, if any, with user and model (bot) roles. Genkit expects "model" for bot responses.')
 });
 export type ChatbotInput = z.infer<typeof ChatbotInputSchema>;
 
@@ -163,38 +163,41 @@ const restaurantChatbotFlow = ai.defineFlow(
     outputSchema: ChatbotOutputSchema,
   },
   async (input) => {
-    // Convert chatHistory from {role, parts:[{text}]} to {role, content:[{text}]} for Genkit
+    // Convert chatHistory from client's {role, parts:[{text}]} to Genkit's {role, content:[{text}]}
+    // The client sends 'model' for bot responses, which is what Genkit expects for that role.
     const historyGenkitMessages: Array<{ role: 'user' | 'model'; content: Array<{text: string}> }> =
-      input.chatHistory?.map(msg => {
+      (input.chatHistory || []).map(msg => {
         const messageContentParts = (msg.parts || []).map(part => ({
-          text: typeof part.text === 'string' ? part.text : '',
+          text: typeof part.text === 'string' ? part.text : '', 
         }));
         return {
-          role: msg.role,
-          content: messageContentParts.length > 0 ? messageContentParts : [{ text: '' }], // Ensure content array is not empty
+          role: msg.role, // 'user' or 'model'
+          content: messageContentParts.length > 0 ? messageContentParts : [{ text: '' }],
         };
-      }) || [];
+      });
 
-    // Prepare current user message, ensuring text is not empty.
-    // input.userMessage is guaranteed to be a string by Zod schema validation of ChatbotInput.
-    const currentUserMessageText = input.userMessage.trim() === '' ? ' ' : input.userMessage;
+    // Prepare current user message for Genkit
+    // Ensure userMessage is a string; Zod validation on ChatbotInputSchema should guarantee this.
+    // If userMessage is empty or only whitespace, send a single space.
+    const userMessageString = input.userMessage.trim();
+    const currentMessageText = userMessageString === '' ? ' ' : userMessageString;
+    
+    const currentUserGenkitMessage = {
+      role: 'user' as const, // Explicitly 'user' role for the current message
+      content: [{ text: currentMessageText }],
+    };
 
     const allMessagesForGenkit = [
       ...historyGenkitMessages,
-      {
-        role: 'user', // Removed 'as const'
-        content: [{ text: currentUserMessageText }],
-      },
+      currentUserGenkitMessage,
     ];
 
     const result = await ai.generate({
-        prompt: restaurantChatbotPrompt,
-        messages: allMessagesForGenkit,
+        prompt: restaurantChatbotPrompt, // Contains system prompt and tools
+        messages: allMessagesForGenkit, // Contains history and current user message
     });
 
-    const responseText = result.text;
+    const responseText = result.text; // Use .text as per Genkit v1.x
     return { botResponse: responseText };
   }
 );
-
-    

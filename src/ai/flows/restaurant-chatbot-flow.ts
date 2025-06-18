@@ -12,6 +12,10 @@ import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import { initialRestaurantsData, initialReviewsData } from '@/lib/localStorage';
 import type { Restaurant, Review } from '@/types';
+import type { ClientChatbotMessage } from '@/types'; // For input.chatHistory
+
+// Schema for a single text content part, as Genkit expects
+const GenkitTextContentPartSchema = z.object({ text: z.string() });
 
 // Tool to get restaurant information
 const RestaurantInfoSchema = z.object({
@@ -98,15 +102,18 @@ const getRestaurantReviewsTool = ai.defineTool(
 
 
 // Chatbot flow schemas
+// Internal schema for message structure used by Zod within this flow
 const ChatbotMessagePartSchema = z.object({ text: z.string() });
-const ChatbotMessageSchema = z.object({ // Not exported anymore
+const InternalChatbotMessageSchema = z.object({
     role: z.enum(['user', 'model']),
     parts: z.array(ChatbotMessagePartSchema)
 });
 
 const ChatbotInputSchema = z.object({
   userMessage: z.string().describe('The message from the user to the chatbot.'),
-  chatHistory: z.array(ChatbotMessageSchema).optional().describe('The history of the conversation, if any, with user and model (bot) roles. Genkit expects "model" for bot responses.')
+  // Use ClientChatbotMessage for the type hint from the client perspective.
+  // Zod will validate against InternalChatbotMessageSchema structure.
+  chatHistory: z.array(InternalChatbotMessageSchema).optional().describe('The history of the conversation, if any, with user and model (bot) roles.')
 });
 export type ChatbotInput = z.infer<typeof ChatbotInputSchema>;
 
@@ -167,24 +174,27 @@ const restaurantChatbotFlow = ai.defineFlow(
     // The client sends 'model' for bot responses, which is what Genkit expects for that role.
     const historyGenkitMessages: Array<{ role: 'user' | 'model'; content: Array<{text: string}> }> =
       (input.chatHistory || []).map(msg => {
-        const messageContentParts = (msg.parts || []).map(part => ({
-          text: typeof part.text === 'string' ? part.text : '', 
-        }));
+        // msg.parts is already validated by ChatbotInputSchema to be an array of {text: string}
+        // We just need to ensure text content is robust for Genkit
+        const messageContentParts = (msg.parts || []).map(part => {
+          const partText = typeof part.text === 'string' ? part.text.trim() : '';
+          return GenkitTextContentPartSchema.parse({ text: partText === '' ? ' ' : partText });
+        });
+        
         return {
           role: msg.role, // 'user' or 'model'
-          content: messageContentParts.length > 0 ? messageContentParts : [{ text: '' }], // Ensure content always has at least one part
+          // Ensure content always has at least one part, even if text is empty.
+          content: messageContentParts.length > 0 ? messageContentParts : [GenkitTextContentPartSchema.parse({ text: ' ' })],
         };
       });
 
     // Prepare current user message for Genkit
-    // Ensure userMessage is a string; Zod validation on ChatbotInputSchema should guarantee this.
-    // If userMessage is empty or only whitespace, send a single space.
     const userMessageString = input.userMessage.trim();
     const currentMessageText = userMessageString === '' ? ' ' : userMessageString;
     
     const currentUserGenkitMessage = {
       role: 'user', 
-      content: [{ text: currentMessageText }],
+      content: [GenkitTextContentPartSchema.parse({ text: currentMessageText })],
     };
 
     const allMessagesForGenkit = [

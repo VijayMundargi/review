@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { MessageCircle, Send, Bot, User, Loader2, X } from 'lucide-react';
 import { chatWithBot, type ChatbotInput } from '@/ai/flows/restaurant-chatbot-flow';
-import type { ClientChatbotMessage } from '@/types'; // Import ClientChatbotMessage
+import type { ClientChatbotMessage } from '@/types';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 
@@ -27,20 +27,20 @@ export function ChatbotWidget() {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const initialBotMessage: Message = {
-    id: 'initial-bot-message-' + Date.now(),
-    sender: 'bot',
-    text: "Hi! I’m your food guide for Gadag 🍽️. Want to check out restaurants, read reviews, or leave a review?",
-    timestamp: new Date(),
-  };
+  const botGreetingText = "Hi! I’m your food guide for Gadag 🍽️. Want to check out restaurants, read reviews, or leave a review?";
 
   useEffect(() => {
     if (isOpen && messages.length === 0 && !isLoading) {
-      if (!messages.some(m => m.id.startsWith('initial-bot-message'))) {
-        setMessages([initialBotMessage]);
-      }
+      setMessages([
+        {
+          id: 'initial-bot-message-static', // Static ID
+          sender: 'bot',
+          text: botGreetingText,
+          timestamp: new Date(), // Set timestamp when message is actually created
+        },
+      ]);
     }
-  }, [isOpen, messages, isLoading]);
+  }, [isOpen, messages.length, isLoading, botGreetingText]);
 
 
   useEffect(() => {
@@ -66,12 +66,13 @@ export function ChatbotWidget() {
       timestamp: new Date(),
     };
     
-    // Use ClientChatbotMessage type for history sent to the backend
+    // `messages` state at this point is the history *before* adding newUserMessage
     const historyForGenkitFlow: ClientChatbotMessage[] = messages.map(msg => ({
         role: msg.sender === 'user' ? 'user' : 'model', 
         parts: [{ text: msg.text }],
     }));
 
+    // Update messages state locally first for responsiveness
     setMessages(prev => [...prev, newUserMessage]);
     setInputValue('');
     setIsLoading(true);

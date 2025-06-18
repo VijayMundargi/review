@@ -83,10 +83,8 @@ Your primary goal is to assist users with their inquiries about these restaurant
 - Do not mention the name of the tool you are using to the user. Just provide the information as if you know it.
 - If the user asks a follow-up question that can be answered from previously fetched tool data in the current conversation, try to use that before calling the tool again, unless new specific filtering is requested.`,
   tools: [listAvailableRestaurantsTool],
-  // Input and output schemas for the prompt itself are less critical here as we use generate({messages: ...})
-  // but defining them for clarity of the flow's contract.
-  input: { schema: ChatbotInputSchema }, 
-  output: { schema: ChatbotOutputSchema }, 
+  // When using .generate({ messages: ... }), input and output schemas for the prompt itself are generally not defined here.
+  // The flow's input and output schemas (ChatbotInputSchema, ChatbotOutputSchema) handle the overall contract.
 });
 
 

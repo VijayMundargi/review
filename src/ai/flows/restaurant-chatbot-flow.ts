@@ -163,34 +163,29 @@ const restaurantChatbotFlow = ai.defineFlow(
     outputSchema: ChatbotOutputSchema,
   },
   async (input) => {
-    // Genkit expects messages with 'content' field, not 'parts' which is used in ChatbotInputSchema for history.
-    // Convert chatHistory from {role, parts:[{text}]} to {role, content:[{text}]}
+    // Convert chatHistory from {role, parts:[{text}]} to {role, content:[{text}]} for Genkit
     const historyGenkitMessages: Array<{ role: 'user' | 'model'; content: Array<{text: string}> }> =
       input.chatHistory?.map(msg => {
-        // Ensure msg.parts is an array and each part has a text string.
         const messageContentParts = (msg.parts || []).map(part => ({
           text: typeof part.text === 'string' ? part.text : '',
         }));
         return {
           role: msg.role,
-          // Ensure content is not an empty array; provide a default part if messageContentParts is empty.
-          content: messageContentParts.length > 0 ? messageContentParts : [{ text: '' }],
+          content: messageContentParts.length > 0 ? messageContentParts : [{ text: '' }], // Ensure content array is not empty
         };
-      }) || []; // Default to empty array if input.chatHistory is undefined
+      }) || [];
 
-    // Process current user message
-    let textForCurrentUserMessage = typeof input.userMessage === 'string' ? input.userMessage : '';
-    // Workaround: if the text is empty or only whitespace, send a single space.
-    // This is to test if Genkit has an issue with completely empty text parts like {text: ""}.
-    if (textForCurrentUserMessage.trim() === '') {
-        textForCurrentUserMessage = ' ';
-    }
-    const currentUserGenkitMessage = {
-      role: 'user' as const, // Use 'as const' for literal type
-      content: [{ text: textForCurrentUserMessage }],
-    };
+    // Prepare current user message, ensuring text is not empty.
+    // input.userMessage is guaranteed to be a string by Zod schema validation of ChatbotInput.
+    const currentUserMessageText = input.userMessage.trim() === '' ? ' ' : input.userMessage;
 
-    const allMessagesForGenkit = [...historyGenkitMessages, currentUserGenkitMessage];
+    const allMessagesForGenkit = [
+      ...historyGenkitMessages,
+      {
+        role: 'user', // Removed 'as const'
+        content: [{ text: currentUserMessageText }],
+      },
+    ];
 
     const result = await ai.generate({
         prompt: restaurantChatbotPrompt,
@@ -201,3 +196,5 @@ const restaurantChatbotFlow = ai.defineFlow(
     return { botResponse: responseText };
   }
 );
+
+    

@@ -6,7 +6,7 @@ const REVIEWS_KEY = 'gadagGrubGuide_reviews';
 const CURRENT_USER_KEY = 'gadagGrubGuide_currentUser';
 
 
-const initialRestaurantsData: Restaurant[] = [
+export const initialRestaurantsData: Restaurant[] = [
   { id: '1', name: 'Hotel Shivaratna', cuisine: 'South Indian', description: 'Authentic South Indian delicacies, known for its crispy dosas and flavorful idlis. A local favorite for breakfast and lunch.', image: 'https://placehold.co/600x400.png', dataAiHint: 'indian food', aiSuggestedDescription: '', aiReasoning: '' },
   { id: '2', name: 'Nisarga Garden Family Restaurant', cuisine: 'Multi-cuisine', description: 'A perfect place for family dining with a variety of dishes, set in a pleasant garden atmosphere. Offers North Indian, South Indian, and Chinese options.', image: 'https://placehold.co/600x400.png', dataAiHint: 'restaurant garden', aiSuggestedDescription: '', aiReasoning: '' },
   { id: '3', name: 'Shree Guru Residency', cuisine: 'North & South Indian', description: 'Serving a blend of North and South Indian flavors, popular for its thalis and biryanis. Clean and comfortable dining.', image: 'https://placehold.co/600x400.png', dataAiHint: 'indian cuisine', aiSuggestedDescription: '', aiReasoning: '' },

@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
+import { ChatbotWidget } from '@/components/ChatbotWidget';
 
 export default function MainLayout({
   children,
@@ -49,6 +50,7 @@ export default function MainLayout({
       <footer className="bg-muted text-muted-foreground py-4 text-center text-sm">
         © {new Date().getFullYear()} Gadag Grub Guide. All rights reserved.
       </footer>
+      <ChatbotWidget />
     </div>
   );
 }

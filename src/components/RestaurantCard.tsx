@@ -91,7 +91,7 @@ export function RestaurantCard({ restaurant, reviews }: RestaurantCardProps) {
         )}
       </CardContent>
       <CardFooter className="p-6 bg-muted/50">
-        <Link href={`/restaurants/${restaurant.id}/review`} passHref legacyBehavior>
+        <Link href={`/restaurants/${restaurant.id}/review`}>
           <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground transition-transform duration-150 hover:scale-105">
             <Utensils className="mr-2 h-4 w-4" /> Write a Review
           </Button>
@@ -100,3 +100,4 @@ export function RestaurantCard({ restaurant, reviews }: RestaurantCardProps) {
     </Card>
   );
 }
+

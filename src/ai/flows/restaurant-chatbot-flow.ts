@@ -45,7 +45,7 @@ const listAvailableRestaurantsTool = ai.defineTool(
 
 // Chatbot flow schemas
 const ChatbotMessagePartSchema = z.object({ text: z.string() });
-const ChatbotMessageSchema = z.object({
+const ChatbotMessageSchema = z.object({ // This is the schema for the FLOW'S input history
     role: z.enum(['user', 'model']),
     parts: z.array(ChatbotMessagePartSchema)
 });
@@ -83,8 +83,6 @@ Your primary goal is to assist users with their inquiries about these restaurant
 - Do not mention the name of the tool you are using to the user. Just provide the information as if you know it.
 - If the user asks a follow-up question that can be answered from previously fetched tool data in the current conversation, try to use that before calling the tool again, unless new specific filtering is requested.`,
   tools: [listAvailableRestaurantsTool],
-  // When using .generate({ messages: ... }), input and output schemas for the prompt itself are generally not defined here.
-  // The flow's input and output schemas (ChatbotInputSchema, ChatbotOutputSchema) handle the overall contract.
 });
 
 
@@ -95,25 +93,26 @@ const restaurantChatbotFlow = ai.defineFlow(
     outputSchema: ChatbotOutputSchema,
   },
   async (input) => {
-    const conversationMessages: Array<{ role: 'user' | 'model'; parts: Array<{text: string}> }> = [];
+    // Prepare messages in the format Genkit's `ai.generate()` expects: { role, content: [{text}]}
+    const genkitMessages: Array<{ role: 'user' | 'model'; content: Array<{text: string}> }> = [];
     
     if (input.chatHistory) {
-        // Ensure chatHistory roles are correctly 'user' or 'model'
         input.chatHistory.forEach(msg => {
-            conversationMessages.push({
+            genkitMessages.push({
                 role: msg.role,
-                parts: msg.parts.map(part => ({ text: part.text }))
+                content: msg.parts.map(part => ({ text: part.text })) // Map `parts` to `content`
             });
         });
     }
-    // Add the current user message to the end of the history
-    conversationMessages.push({ role: 'user', parts: [{text: input.userMessage}] });
+    // Add the current user message
+    genkitMessages.push({ role: 'user', content: [{text: input.userMessage}] });
 
-    const result = await restaurantChatbotPrompt.generate({
-        messages: conversationMessages,
+    const result = await ai.generate({
+        prompt: restaurantChatbotPrompt, // Pass the defined PromptReference
+        messages: genkitMessages,        // Pass the full conversation history including the latest user message
     });
     
-    const responseText = result.text();
+    const responseText = result.text; // Correct for Genkit 1.x
     return { botResponse: responseText };
   }
 );

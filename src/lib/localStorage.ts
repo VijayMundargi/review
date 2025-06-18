@@ -11,20 +11,26 @@ export const initialRestaurantsData: Restaurant[] = [
   { id: '2', name: 'Nisarga Garden Family Restaurant', cuisine: 'Multi-cuisine', description: 'A perfect place for family dining with a variety of dishes, set in a pleasant garden atmosphere. Offers North Indian, South Indian, and Chinese options.', image: 'https://placehold.co/600x400.png', dataAiHint: 'restaurant garden', aiSuggestedDescription: '', aiReasoning: '' },
   { id: '3', name: 'Shree Guru Residency', cuisine: 'North & South Indian', description: 'Serving a blend of North and South Indian flavors, popular for its thalis and biryanis. Clean and comfortable dining.', image: 'https://placehold.co/600x400.png', dataAiHint: 'indian thali', aiSuggestedDescription: '', aiReasoning: '' },
   { id: '4', name: 'Kamat Hotel', cuisine: 'Vegetarian', description: 'Pure vegetarian restaurant with traditional recipes from Karnataka. Famous for its authentic Udupi-style food.', image: 'https://placehold.co/600x400.png', dataAiHint: 'vegetarian thali', aiSuggestedDescription: '', aiReasoning: '' },
-  { id: '5', name: 'Swathi Family Restaurant', cuisine: 'Indo-Chinese', description: 'Delicious Indo-Chinese fusion cuisine, offering a mix of spicy Schezwan dishes and popular Chinese favorites adapted to Indian tastes.', image: 'https://placehold.co/600x400.png', dataAiHint: 'chinese noodles', aiSuggestedDescription: '', aiReasoning: '' }
+  { id: '5', name: 'Swathi Family Restaurant', cuisine: 'Indo-Chinese', description: 'Delicious Indo-Chinese fusion cuisine, offering a mix of spicy Schezwan dishes and popular Chinese favorites adapted to Indian tastes.', image: 'https://placehold.co/600x400.png', dataAiHint: 'chinese noodles', aiSuggestedDescription: '', aiReasoning: '' },
+  { id: '6', name: 'Annapoorna Udupi Bhojana', cuisine: 'Udupi South Indian', description: 'Classic Udupi-style vegetarian meals, known for its authentic flavors and quick service. A go-to for traditional Kannada thalis.', image: 'https://placehold.co/600x400.png', dataAiHint: 'udupi thali', aiSuggestedDescription: '', aiReasoning: '' },
+  { id: '7', name: 'Spice Garden Restaurant', cuisine: 'North Indian & Chinese', description: 'A family-friendly restaurant offering a diverse menu of popular North Indian curries, tandoori items, and flavorful Chinese dishes.', image: 'https://placehold.co/600x400.png', dataAiHint: 'indian curry', aiSuggestedDescription: '', aiReasoning: '' },
+  { id: '8', name: 'City Light Cafe', cuisine: 'Cafe & Snacks', description: 'A cozy spot for quick bites, tea, coffee, and local snacks. Perfect for a casual hangout or an evening snack.', image: 'https://placehold.co/600x400.png', dataAiHint: 'cafe snacks', aiSuggestedDescription: '', aiReasoning: '' }
 ];
 
 export const initialReviewsData: Review[] = [
   { id: 'r1', restaurantId: '1', userId: 'user123', username: 'FoodieGal', title: 'Amazing Dosa!', text: 'Loved the masala dosa at Shivaratna Grand Eatery! Crispy and flavorful.', rating: 4, date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString() },
-  { id: 'r1a', restaurantId: '1', userId: 'user456', username: 'CriticBob', title: 'Good, not great', text: 'Masala dosa was decent, service was quick. Could be spicier.', rating: 3, date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString() },
-  { id: 'r2', restaurantId: '1', userId: 'user456', username: 'BiryaniKing', title: 'Decent South Indian', text: 'The idlis were soft, but the sambar could be better.', rating: 3, date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString() },
+  { id: 'r1a', restaurantId: '1', userId: 'user456', username: 'CriticBob', title: 'Good, not great', text: 'Masala dosa at Shivaratna Grand Eatery was decent, service was quick. Could be spicier.', rating: 3, date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString() },
+  { id: 'r2', restaurantId: '1', userId: 'user456', username: 'BiryaniKing', title: 'Decent South Indian', text: 'The idlis at Shivaratna Grand Eatery were soft, but the sambar could be better.', rating: 3, date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString() },
   { id: 'r3', restaurantId: '2', userId: 'user789', username: 'FamilyDiner', title: 'Great for Families', text: 'Great ambiance and paneer tikka at Nisarga! Kids loved the garden.', rating: 5, date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString() },
-  { id: 'r4', restaurantId: '2', userId: 'user101', username: 'QuickBite', title: 'Good food, slow service', text: 'The North Indian dishes were tasty, but service was a bit slow during peak hours.', rating: 3, date: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString() },
-  { id: 'r4a', restaurantId: '2', userId: 'user102', username: 'AnnoyedEater', title: 'Too Slow', text: 'Waited ages for our food. Not coming back on a weekend.', rating: 2, date: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString() },
-  { id: 'r5', restaurantId: '4', userId: 'user202', username: 'VegLover', title: 'Authentic Thali', text: 'Best vegetarian thali in town! So many varieties and authentic taste.', rating: 5, date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString() },
-  { id: 'r6', restaurantId: '4', userId: 'user303', username: 'LocalExplorer', title: 'Bit Crowded', text: 'Decent Udupi food, but the place gets a bit crowded during lunch.', rating: 3, date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString() },
-  { id: 'r7', restaurantId: '3', userId: 'user303', username: 'SpiceQueen', title: 'Delicious Biryani', text: 'The biryani here is a must-try! Perfectly spiced.', rating: 5, date: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString() },
-  { id: 'r8', restaurantId: '5', userId: 'user303', username: 'NoodleFan', title: 'Yummy Noodles', text: 'Schezwan noodles were fantastic. Good portion size too.', rating: 4, date: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString() },
+  { id: 'r4', restaurantId: '2', userId: 'user101', username: 'QuickBite', title: 'Good food, slow service', text: 'The North Indian dishes at Nisarga Garden were tasty, but service was a bit slow during peak hours.', rating: 3, date: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString() },
+  { id: 'r4a', restaurantId: '2', userId: 'user102', username: 'AnnoyedEater', title: 'Too Slow', text: 'Waited ages for our food at Nisarga. Not coming back on a weekend.', rating: 2, date: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString() },
+  { id: 'r5', restaurantId: '4', userId: 'user202', username: 'VegLover', title: 'Authentic Thali', text: 'Best vegetarian thali in town at Kamat Hotel! So many varieties and authentic taste.', rating: 5, date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString() },
+  { id: 'r6', restaurantId: '4', userId: 'user303', username: 'LocalExplorer', title: 'Bit Crowded', text: 'Decent Udupi food at Kamat, but the place gets a bit crowded during lunch.', rating: 3, date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString() },
+  { id: 'r7', restaurantId: '3', userId: 'user303', username: 'SpiceQueen', title: 'Delicious Biryani', text: 'The biryani at Shree Guru Residency is a must-try! Perfectly spiced.', rating: 5, date: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString() },
+  { id: 'r8', restaurantId: '5', userId: 'user303', username: 'NoodleFan', title: 'Yummy Noodles', text: 'Schezwan noodles at Swathi were fantastic. Good portion size too.', rating: 4, date: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString() },
+  { id: 'r9', restaurantId: '6', userId: 'user404', username: 'ThaliLover', title: 'Authentic Udupi Meal', text: 'Annapoorna Udupi Bhojana serves a really good, unlimited thali. Very satisfying!', rating: 5, date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString() },
+  { id: 'r10', restaurantId: '7', userId: 'user505', username: 'CurryFan', title: 'Tasty Paneer Butter Masala', text: 'Enjoyed the Paneer Butter Masala at Spice Garden. The naans were soft too.', rating: 4, date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString() },
+  { id: 'r11', restaurantId: '8', userId: 'user606', username: 'ChaiAddict', title: 'Nice Tea Spot', text: 'City Light Cafe is great for evening tea and some light snacks. Very affordable.', rating: 4, date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString() }
 ];
 
 
@@ -66,10 +72,24 @@ export const getRestaurants = (): Restaurant[] => {
   // if the user already has an older version in their localStorage.
   // A more robust solution might involve versioning the data.
   const firstRestaurant = restaurants.find(r => r.id === '1');
-  if (firstRestaurant && firstRestaurant.name === 'Hotel Shivaratna') {
+  // Check against an old name that was updated. If the user has this, they have old data.
+  if (firstRestaurant && firstRestaurant.name === 'Hotel Shivaratna') { 
      setItems<Restaurant>(RESTAURANTS_KEY, initialRestaurantsData);
      return initialRestaurantsData;
   }
+  // Add a check for number of restaurants to trigger update if new ones were added to initialData
+  if (restaurants.length < initialRestaurantsData.length && typeof window !== 'undefined') {
+    const existingIds = new Set(restaurants.map(r => r.id));
+    const updatedRestaurants = [...restaurants];
+    initialRestaurantsData.forEach(initialRestaurant => {
+      if (!existingIds.has(initialRestaurant.id)) {
+        updatedRestaurants.push(initialRestaurant);
+      }
+    });
+    setItems<Restaurant>(RESTAURANTS_KEY, updatedRestaurants);
+    return updatedRestaurants;
+  }
+
   return restaurants;
 }
 export const setRestaurants = (restaurants: Restaurant[]): void => setItems<Restaurant>(RESTAURANTS_KEY, restaurants);
@@ -97,13 +117,29 @@ export const getReviews = (): Review[] => {
       setItems<Review>(REVIEWS_KEY, initialReviewsData);
       return initialReviewsData;
     }
+    // Add a check for number of reviews to trigger update if new ones were added to initialData
+    if (reviews.length < initialReviewsData.length && typeof window !== 'undefined') {
+      const existingIds = new Set(reviews.map(r => r.id));
+      const updatedReviews = [...reviews];
+      initialReviewsData.forEach(initialReview => {
+        if (!existingIds.has(initialReview.id)) {
+          updatedReviews.push(initialReview);
+        }
+      });
+      // Re-sort by date after adding new ones
+      updatedReviews.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      setItems<Review>(REVIEWS_KEY, updatedReviews);
+      return updatedReviews;
+    }
     return reviews;
 };
 export const setReviews = (reviews: Review[]): void => setItems<Review>(REVIEWS_KEY, reviews);
 export const getReviewsForRestaurant = (restaurantId: string): Review[] => getReviews().filter(review => review.restaurantId === restaurantId);
 export const addReview = (review: Review): void => {
   const reviews = getReviews();
-  setReviews([review, ...reviews]); 
+  // Add new review and then sort all reviews by date
+  const updatedReviews = [review, ...reviews].sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  setReviews(updatedReviews); 
 };
 
 // Current User (Session)
@@ -139,6 +175,16 @@ if (typeof window !== 'undefined') {
         const storedRestaurants = JSON.parse(localStorage.getItem(RESTAURANTS_KEY) || '[]') as Restaurant[];
         if (storedRestaurants.length > 0 && storedRestaurants[0].id === '1' && storedRestaurants[0].name === 'Hotel Shivaratna') {
             localStorage.setItem(RESTAURANTS_KEY, JSON.stringify(initialRestaurantsData));
+        } else if (storedRestaurants.length < initialRestaurantsData.length) {
+            // If fewer restaurants in storage than in initial data, update storage
+            const existingIds = new Set(storedRestaurants.map(r => r.id));
+            const updatedRestaurants = [...storedRestaurants];
+            initialRestaurantsData.forEach(initialRestaurant => {
+              if (!existingIds.has(initialRestaurant.id)) {
+                updatedRestaurants.push(initialRestaurant);
+              }
+            });
+            localStorage.setItem(RESTAURANTS_KEY, JSON.stringify(updatedRestaurants));
         }
     }
     if (!localStorage.getItem(REVIEWS_KEY)) {
@@ -149,7 +195,16 @@ if (typeof window !== 'undefined') {
         const firstReviewForRestaurant1 = storedReviews.find(r => r.restaurantId === '1' && r.text.includes('Hotel Shivaratna'));
          if (firstReviewForRestaurant1) {
             localStorage.setItem(REVIEWS_KEY, JSON.stringify(initialReviewsData));
+        } else if (storedReviews.length < initialReviewsData.length) {
+            const existingIds = new Set(storedReviews.map(r => r.id));
+            const updatedReviews = [...storedReviews];
+            initialReviewsData.forEach(initialReview => {
+              if (!existingIds.has(initialReview.id)) {
+                updatedReviews.push(initialReview);
+              }
+            });
+            updatedReviews.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+            localStorage.setItem(REVIEWS_KEY, JSON.stringify(updatedReviews));
         }
     }
 }
-

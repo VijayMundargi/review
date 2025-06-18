@@ -7,7 +7,7 @@ const CURRENT_USER_KEY = 'gadagGrubGuide_currentUser';
 
 
 export const initialRestaurantsData: Restaurant[] = [
-  { id: '1', name: 'Hotel Shivaratna', cuisine: 'South Indian', description: 'Authentic South Indian delicacies, known for its crispy dosas and flavorful idlis. A local favorite for breakfast and lunch.', image: 'https://placehold.co/600x400.png', dataAiHint: 'indian dosa', aiSuggestedDescription: '', aiReasoning: '' },
+  { id: '1', name: 'Shivaratna Grand Eatery', cuisine: 'South Indian', description: 'Authentic South Indian delicacies, known for its crispy dosas and flavorful idlis. A local favorite for breakfast and lunch.', image: 'https://placehold.co/600x400.png', dataAiHint: 'indian dosa', aiSuggestedDescription: '', aiReasoning: '' },
   { id: '2', name: 'Nisarga Garden Family Restaurant', cuisine: 'Multi-cuisine', description: 'A perfect place for family dining with a variety of dishes, set in a pleasant garden atmosphere. Offers North Indian, South Indian, and Chinese options.', image: 'https://placehold.co/600x400.png', dataAiHint: 'restaurant garden', aiSuggestedDescription: '', aiReasoning: '' },
   { id: '3', name: 'Shree Guru Residency', cuisine: 'North & South Indian', description: 'Serving a blend of North and South Indian flavors, popular for its thalis and biryanis. Clean and comfortable dining.', image: 'https://placehold.co/600x400.png', dataAiHint: 'indian thali', aiSuggestedDescription: '', aiReasoning: '' },
   { id: '4', name: 'Kamat Hotel', cuisine: 'Vegetarian', description: 'Pure vegetarian restaurant with traditional recipes from Karnataka. Famous for its authentic Udupi-style food.', image: 'https://placehold.co/600x400.png', dataAiHint: 'vegetarian thali', aiSuggestedDescription: '', aiReasoning: '' },
@@ -15,7 +15,7 @@ export const initialRestaurantsData: Restaurant[] = [
 ];
 
 export const initialReviewsData: Review[] = [
-  { id: 'r1', restaurantId: '1', userId: 'user123', username: 'FoodieGal', title: 'Amazing Dosa!', text: 'Loved the masala dosa at Hotel Shivaratna! Crispy and flavorful.', rating: 4, date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString() },
+  { id: 'r1', restaurantId: '1', userId: 'user123', username: 'FoodieGal', title: 'Amazing Dosa!', text: 'Loved the masala dosa at Shivaratna Grand Eatery! Crispy and flavorful.', rating: 4, date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString() },
   { id: 'r1a', restaurantId: '1', userId: 'user456', username: 'CriticBob', title: 'Good, not great', text: 'Masala dosa was decent, service was quick. Could be spicier.', rating: 3, date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString() },
   { id: 'r2', restaurantId: '1', userId: 'user456', username: 'BiryaniKing', title: 'Decent South Indian', text: 'The idlis were soft, but the sambar could be better.', rating: 3, date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString() },
   { id: 'r3', restaurantId: '2', userId: 'user789', username: 'FamilyDiner', title: 'Great for Families', text: 'Great ambiance and paneer tikka at Nisarga! Kids loved the garden.', rating: 5, date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString() },
@@ -61,6 +61,15 @@ export const getRestaurants = (): Restaurant[] => {
     setItems<Restaurant>(RESTAURANTS_KEY, initialRestaurantsData);
     return initialRestaurantsData;
   }
+  // If localStorage has data, but it's the old version, update it.
+  // This is a simple way to ensure updates to initialRestaurantsData propagate
+  // if the user already has an older version in their localStorage.
+  // A more robust solution might involve versioning the data.
+  const firstRestaurant = restaurants.find(r => r.id === '1');
+  if (firstRestaurant && firstRestaurant.name === 'Hotel Shivaratna') {
+     setItems<Restaurant>(RESTAURANTS_KEY, initialRestaurantsData);
+     return initialRestaurantsData;
+  }
   return restaurants;
 }
 export const setRestaurants = (restaurants: Restaurant[]): void => setItems<Restaurant>(RESTAURANTS_KEY, restaurants);
@@ -81,6 +90,12 @@ export const getReviews = (): Review[] => {
     if (reviews.length === 0 && typeof window !== 'undefined') {
         setItems<Review>(REVIEWS_KEY, initialReviewsData);
         return initialReviewsData;
+    }
+    // Check if reviews need updating based on the restaurant name change
+    const firstReviewForRestaurant1 = reviews.find(r => r.restaurantId === '1' && r.text.includes('Hotel Shivaratna'));
+    if (firstReviewForRestaurant1) {
+      setItems<Review>(REVIEWS_KEY, initialReviewsData);
+      return initialReviewsData;
     }
     return reviews;
 };
@@ -119,9 +134,22 @@ export const setCurrentUser = (user: User | null): void => {
 if (typeof window !== 'undefined') {
     if (!localStorage.getItem(RESTAURANTS_KEY)) {
         localStorage.setItem(RESTAURANTS_KEY, JSON.stringify(initialRestaurantsData));
+    } else {
+        // Check if existing data needs update (simple check for the first restaurant name)
+        const storedRestaurants = JSON.parse(localStorage.getItem(RESTAURANTS_KEY) || '[]') as Restaurant[];
+        if (storedRestaurants.length > 0 && storedRestaurants[0].id === '1' && storedRestaurants[0].name === 'Hotel Shivaratna') {
+            localStorage.setItem(RESTAURANTS_KEY, JSON.stringify(initialRestaurantsData));
+        }
     }
     if (!localStorage.getItem(REVIEWS_KEY)) {
         localStorage.setItem(REVIEWS_KEY, JSON.stringify(initialReviewsData));
+    } else {
+        // Check if existing reviews need update
+        const storedReviews = JSON.parse(localStorage.getItem(REVIEWS_KEY) || '[]') as Review[];
+        const firstReviewForRestaurant1 = storedReviews.find(r => r.restaurantId === '1' && r.text.includes('Hotel Shivaratna'));
+         if (firstReviewForRestaurant1) {
+            localStorage.setItem(REVIEWS_KEY, JSON.stringify(initialReviewsData));
+        }
     }
 }
 

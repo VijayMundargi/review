@@ -53,29 +53,31 @@ export function ChatbotWidget() {
   }, [isOpen, isLoading]);
 
   const handleSendMessage = async () => {
-    if (inputValue.trim() === '' || isLoading) return;
+    const userText = inputValue; // Capture before clearing or state updates
+    if (userText.trim() === '' || isLoading) return;
 
     const newUserMessage: Message = {
       id: `user-${Date.now()}`,
       sender: 'user',
-      text: inputValue,
+      text: userText,
       timestamp: new Date(),
     };
     
-    setMessages(prev => [...prev, newUserMessage]);
-    const currentInputValue = inputValue; 
-    setInputValue('');
+    // Construct history BEFORE adding the current user message to the `messages` state
+    // The `messages` state at this point is the history *before* the current user's input.
+    const historyForGenkitFlow = messages.map(msg => ({
+        role: msg.sender === 'user' ? 'user' : ('model' as 'user' | 'model'),
+        parts: [{ text: msg.text }],
+    }));
+
+    setMessages(prev => [...prev, newUserMessage]); // Now update UI state for display
+    setInputValue(''); // Clear input field
     setIsLoading(true);
 
     try {
-      const historyForFlow = messages.map(msg => ({
-        role: msg.sender === 'user' ? 'user' : ('model' as 'user' | 'model'),
-        parts: [{ text: msg.text }],
-      }));
-
       const inputForFlow: ChatbotInput = {
-        userMessage: currentInputValue, 
-        chatHistory: historyForFlow 
+        userMessage: userText, // This is the distinct new message
+        chatHistory: historyForGenkitFlow // This is the preceding history
       };
       
       const response = await chatWithBot(inputForFlow);

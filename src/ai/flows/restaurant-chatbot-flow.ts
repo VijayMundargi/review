@@ -167,13 +167,23 @@ const restaurantChatbotFlow = ai.defineFlow(
     
     if (input.chatHistory) {
         input.chatHistory.forEach(msg => {
+            // Ensure msg.parts is an array and each part has a text string.
+            // Default to an empty string for text if it's not a string (Zod should prevent this).
+            const CMFlowMessageParts = (msg.parts || []).map(part => ({ 
+              text: typeof part.text === 'string' ? part.text : '' 
+            }));
+            
             genkitMessages.push({
                 role: msg.role,
-                content: msg.parts.map(part => ({ text: part.text })) 
+                // Ensure content is not an empty array; provide a default part if CMFlowMessageParts is empty.
+                content: CMFlowMessageParts.length > 0 ? CMFlowMessageParts : [{ text: '' }]
             });
         });
     }
-    genkitMessages.push({ role: 'user', content: [{text: input.userMessage}] });
+    
+    // Ensure input.userMessage is a string. Default to empty string if not (Zod should prevent this).
+    const currentUserMessageText = typeof input.userMessage === 'string' ? input.userMessage : '';
+    genkitMessages.push({ role: 'user', content: [{text: currentUserMessageText}] });
 
     const result = await ai.generate({
         prompt: restaurantChatbotPrompt, 
@@ -184,3 +194,4 @@ const restaurantChatbotFlow = ai.defineFlow(
     return { botResponse: responseText };
   }
 );
+

@@ -101,7 +101,7 @@ const getRestaurantReviewsTool = ai.defineTool(
 const ChatbotMessagePartSchema = z.object({ text: z.string() });
 const ChatbotMessageSchema = z.object({ 
     role: z.enum(['user', 'model']),
-    parts: z.array(ChatbotMessagePartSchema)
+    parts: z.array(ChatbotMessagePartSchema) // This is 'parts' for the input schema
 });
 
 const ChatbotInputSchema = z.object({
@@ -163,12 +163,13 @@ const restaurantChatbotFlow = ai.defineFlow(
     outputSchema: ChatbotOutputSchema,
   },
   async (input) => {
+    // Genkit expects messages with 'content' field, not 'parts'
     const genkitMessages: Array<{ role: 'user' | 'model'; content: Array<{text: string}> }> = [];
     
     if (input.chatHistory) {
         input.chatHistory.forEach(msg => {
+            // msg.parts comes from ChatbotInputSchema (which uses ChatbotMessageSchema)
             // Ensure msg.parts is an array and each part has a text string.
-            // Default to an empty string for text if it's not a string (Zod should prevent this).
             const CMFlowMessageParts = (msg.parts || []).map(part => ({ 
               text: typeof part.text === 'string' ? part.text : '' 
             }));
@@ -181,9 +182,14 @@ const restaurantChatbotFlow = ai.defineFlow(
         });
     }
     
-    // Ensure input.userMessage is a string. Default to empty string if not (Zod should prevent this).
-    const currentUserMessageText = typeof input.userMessage === 'string' ? input.userMessage : '';
-    genkitMessages.push({ role: 'user', content: [{text: currentUserMessageText}] });
+    // Process current user message
+    let textForCurrentUserMessage = typeof input.userMessage === 'string' ? input.userMessage : '';
+    // Workaround: if the text is empty or only whitespace, send a single space.
+    // This is to test if Genkit has an issue with completely empty text parts like {text: ""}.
+    if (textForCurrentUserMessage.trim() === '') {
+        textForCurrentUserMessage = ' '; 
+    }
+    genkitMessages.push({ role: 'user', content: [{text: textForCurrentUserMessage}] });
 
     const result = await ai.generate({
         prompt: restaurantChatbotPrompt, 
@@ -194,4 +200,3 @@ const restaurantChatbotFlow = ai.defineFlow(
     return { botResponse: responseText };
   }
 );
-

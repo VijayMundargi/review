@@ -9,32 +9,37 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { loginUser } from '@/actions/authActions';
+import { registerUser } from '@/actions/authActions';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter, NextRouter } from 'next/navigation';
 import Link from 'next/link';
-import { UtensilsCrossed, LogIn, Loader2 } from 'lucide-react';
-import { useToast } from "@/hooks/use-toast"
+import { UtensilsCrossed, UserPlus, Loader2 } from 'lucide-react';
+import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   username: z.string().min(3, { message: "Username must be at least 3 characters." }),
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
+  confirmPassword: z.string().min(6, { message: "Password must be at least 6 characters." }),
+}).refine(data => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"], // path to show error under
 });
 
-type LoginFormValues = z.infer<typeof formSchema>;
+type RegisterFormValues = z.infer<typeof formSchema>;
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
-  const { login, currentUser } = useAuth();
+  const { login, currentUser } = useAuth(); // login is used to set user session after registration
   const router: NextRouter = useRouter();
   const { toast } = useToast();
 
-  const form = useForm<LoginFormValues>({
+  const form = useForm<RegisterFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       username: "",
       password: "",
+      confirmPassword: "",
     },
   });
 
@@ -44,21 +49,21 @@ export default function LoginPage() {
     }
   }, [currentUser, router]);
 
-
-  const onSubmit = async (values: LoginFormValues) => {
+  const onSubmit = async (values: RegisterFormValues) => {
     setIsSubmitting(true);
     setAuthError(null);
     const formData = new FormData();
     formData.append('username', values.username);
     formData.append('password', values.password);
+    // confirmPassword is not sent to action, it's just for client-side validation
 
     try {
-      const result = await loginUser(formData);
+      const result = await registerUser(formData);
       if (result.success && result.user) {
-        login(result.user);
+        login(result.user); // Log in the user after successful registration
         toast({
-          title: "Login Successful",
-          description: `Welcome back, ${result.user.username}!`,
+          title: "Registration Successful",
+          description: `Welcome, ${result.user.username}! You are now logged in.`,
         });
         router.push('/restaurants');
       } else {
@@ -66,7 +71,7 @@ export default function LoginPage() {
         setAuthError(errorMsg);
         toast({
           variant: "destructive",
-          title: "Login Failed",
+          title: "Registration Failed",
           description: errorMsg,
         });
       }
@@ -75,14 +80,14 @@ export default function LoginPage() {
       setAuthError(errorMsg);
       toast({
         variant: "destructive",
-        title: "Authentication Error",
+        title: "Registration Error",
         description: errorMsg,
       });
     } finally {
       setIsSubmitting(false);
     }
   };
-
+  
   if (currentUser) { 
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-background to-muted p-4">
@@ -98,17 +103,17 @@ export default function LoginPage() {
           <div className="inline-block p-3 bg-primary rounded-full mx-auto mb-4">
             <UtensilsCrossed className="h-10 w-10 text-primary-foreground" />
           </div>
-          <CardTitle className="text-3xl font-headline text-primary">Login to Gadag Grub Guide</CardTitle>
-          <CardDescription className="text-muted-foreground">Access your account to explore restaurants</CardDescription>
+          <CardTitle className="text-3xl font-headline text-primary">Create an Account</CardTitle>
+          <CardDescription className="text-muted-foreground">Join Gadag Grub Guide to review and discover</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="username" className="text-foreground">Username</Label>
+              <Label htmlFor="username">Username</Label>
               <Input
                 id="username"
                 type="text"
-                placeholder="Enter your username"
+                placeholder="Choose a username"
                 {...form.register('username')}
                 className="bg-input placeholder:text-muted-foreground"
                 aria-invalid={form.formState.errors.username ? "true" : "false"}
@@ -122,13 +127,27 @@ export default function LoginPage() {
               <Input
                 id="password"
                 type="password"
-                placeholder="Enter your password"
+                placeholder="Create a password"
                 {...form.register('password')}
                 className="bg-input placeholder:text-muted-foreground"
                 aria-invalid={form.formState.errors.password ? "true" : "false"}
               />
               {form.formState.errors.password && (
                 <p className="text-sm text-destructive">{form.formState.errors.password.message}</p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                placeholder="Confirm your password"
+                {...form.register('confirmPassword')}
+                className="bg-input placeholder:text-muted-foreground"
+                aria-invalid={form.formState.errors.confirmPassword ? "true" : "false"}
+              />
+              {form.formState.errors.confirmPassword && (
+                <p className="text-sm text-destructive">{form.formState.errors.confirmPassword.message}</p>
               )}
             </div>
             {authError && (
@@ -139,15 +158,15 @@ export default function LoginPage() {
                 type="submit" 
                 className="w-full bg-primary hover:bg-primary/90 text-primary-foreground transition-transform duration-150 hover:scale-105"
                 disabled={isSubmitting}
-                aria-label="Login"
+                aria-label="Register"
               >
-                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogIn className="mr-2 h-4 w-4" />}
-                Login
+                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UserPlus className="mr-2 h-4 w-4" />}
+                Sign Up
               </Button>
               <p className="text-sm text-center text-muted-foreground">
-                Don't have an account?{' '}
-                <Link href="/register" className="font-medium text-primary hover:underline">
-                  Sign Up
+                Already have an account?{' '}
+                <Link href="/login" className="font-medium text-primary hover:underline">
+                  Login
                 </Link>
               </p>
             </CardFooter>
@@ -155,7 +174,7 @@ export default function LoginPage() {
         </CardContent>
       </Card>
        <p className="mt-8 text-center text-sm text-muted-foreground">
-        Explore the flavors of Gadag. Your culinary journey starts here.
+        Start your Gadag culinary adventure today.
       </p>
     </div>
   );

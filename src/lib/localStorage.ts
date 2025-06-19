@@ -1,3 +1,4 @@
+
 import type { Restaurant, Review, User } from '@/types';
 
 const USERS_KEY = 'gadagGrubGuide_users';
@@ -7,14 +8,14 @@ const CURRENT_USER_KEY = 'gadagGrubGuide_currentUser';
 
 
 export const initialRestaurantsData: Restaurant[] = [
-  { id: '1', name: 'Shivaratna Grand Eatery', cuisine: 'South Indian', description: 'Authentic South Indian delicacies, known for its crispy dosas and flavorful idlis. A local favorite for breakfast and lunch.', image: 'https://placehold.co/600x400.png', dataAiHint: 'indian dosa', aiSuggestedDescription: '', aiReasoning: '' },
-  { id: '2', name: 'Nisarga Garden Family Restaurant', cuisine: 'Multi-cuisine', description: 'A perfect place for family dining with a variety of dishes, set in a pleasant garden atmosphere. Offers North Indian, South Indian, and Chinese options.', image: 'https://placehold.co/600x400.png', dataAiHint: 'restaurant garden', aiSuggestedDescription: '', aiReasoning: '' },
-  { id: '3', name: 'Shree Guru Residency', cuisine: 'North & South Indian', description: 'Serving a blend of North and South Indian flavors, popular for its thalis and biryanis. Clean and comfortable dining.', image: 'https://placehold.co/600x400.png', dataAiHint: 'indian thali', aiSuggestedDescription: '', aiReasoning: '' },
-  { id: '4', name: 'Kamat Hotel', cuisine: 'Vegetarian', description: 'Pure vegetarian restaurant with traditional recipes from Karnataka. Famous for its authentic Udupi-style food.', image: 'https://placehold.co/600x400.png', dataAiHint: 'vegetarian thali', aiSuggestedDescription: '', aiReasoning: '' },
-  { id: '5', name: 'Swathi Family Restaurant', cuisine: 'Indo-Chinese', description: 'Delicious Indo-Chinese fusion cuisine, offering a mix of spicy Schezwan dishes and popular Chinese favorites adapted to Indian tastes.', image: 'https://placehold.co/600x400.png', dataAiHint: 'chinese noodles', aiSuggestedDescription: '', aiReasoning: '' },
-  { id: '6', name: 'Annapoorna Udupi Bhojana', cuisine: 'Udupi South Indian', description: 'Classic Udupi-style vegetarian meals, known for its authentic flavors and quick service. A go-to for traditional Kannada thalis.', image: 'https://placehold.co/600x400.png', dataAiHint: 'udupi thali', aiSuggestedDescription: '', aiReasoning: '' },
-  { id: '7', name: 'Spice Garden Restaurant', cuisine: 'North Indian & Chinese', description: 'A family-friendly restaurant offering a diverse menu of popular North Indian curries, tandoori items, and flavorful Chinese dishes.', image: 'https://placehold.co/600x400.png', dataAiHint: 'indian curry', aiSuggestedDescription: '', aiReasoning: '' },
-  { id: '8', name: 'City Light Cafe', cuisine: 'Cafe & Snacks', description: 'A cozy spot for quick bites, tea, coffee, and local snacks. Perfect for a casual hangout or an evening snack.', image: 'https://placehold.co/600x400.png', dataAiHint: 'cafe snacks', aiSuggestedDescription: '', aiReasoning: '' }
+  { id: '1', name: 'Shivaratna Grand Eatery', cuisine: 'South Indian', description: 'Authentic South Indian delicacies, known for its crispy dosas and flavorful idlis. A local favorite for breakfast and lunch.', image: 'https://placehold.co/600x400.png', dataAiHint: 'crispy dosa', aiSuggestedDescription: '', aiReasoning: '' },
+  { id: '2', name: 'Nisarga Garden Family Restaurant', cuisine: 'Multi-cuisine', description: 'A perfect place for family dining with a variety of dishes, set in a pleasant garden atmosphere. Offers North Indian, South Indian, and Chinese options.', image: 'https://placehold.co/600x400.png', dataAiHint: 'garden dining', aiSuggestedDescription: '', aiReasoning: '' },
+  { id: '3', name: 'Shree Guru Residency', cuisine: 'North & South Indian', description: 'Serving a blend of North and South Indian flavors, popular for its thalis and biryanis. Clean and comfortable dining.', image: 'https://placehold.co/600x400.png', dataAiHint: 'biryani plate', aiSuggestedDescription: '', aiReasoning: '' },
+  { id: '4', name: 'Kamat Hotel', cuisine: 'Vegetarian', description: 'Pure vegetarian restaurant with traditional recipes from Karnataka. Famous for its authentic Udupi-style food.', image: 'https://placehold.co/600x400.png', dataAiHint: 'udupi meal', aiSuggestedDescription: '', aiReasoning: '' },
+  { id: '5', name: 'Swathi Family Restaurant', cuisine: 'Indo-Chinese', description: 'Delicious Indo-Chinese fusion cuisine, offering a mix of spicy Schezwan dishes and popular Chinese favorites adapted to Indian tastes.', image: 'https://placehold.co/600x400.png', dataAiHint: 'schezwan noodles', aiSuggestedDescription: '', aiReasoning: '' },
+  { id: '6', name: 'Annapoorna Udupi Bhojana', cuisine: 'Udupi South Indian', description: 'Classic Udupi-style vegetarian meals, known for its authentic flavors and quick service. A go-to for traditional Kannada thalis.', image: 'https://placehold.co/600x400.png', dataAiHint: 'kannada thali', aiSuggestedDescription: '', aiReasoning: '' },
+  { id: '7', name: 'Spice Garden Restaurant', cuisine: 'North Indian & Chinese', description: 'A family-friendly restaurant offering a diverse menu of popular North Indian curries, tandoori items, and flavorful Chinese dishes.', image: 'https://placehold.co/600x400.png', dataAiHint: 'tandoori platter', aiSuggestedDescription: '', aiReasoning: '' },
+  { id: '8', name: 'City Light Cafe', cuisine: 'Cafe & Snacks', description: 'A cozy spot for quick bites, tea, coffee, and local snacks. Perfect for a casual hangout or an evening snack.', image: 'https://placehold.co/600x400.png', dataAiHint: 'chai snacks', aiSuggestedDescription: '', aiReasoning: '' }
 ];
 
 export const initialReviewsData: Review[] = [
@@ -78,12 +79,35 @@ export const getRestaurants = (): Restaurant[] => {
      return initialRestaurantsData;
   }
   // Add a check for number of restaurants to trigger update if new ones were added to initialData
-  if (restaurants.length < initialRestaurantsData.length && typeof window !== 'undefined') {
-    const existingIds = new Set(restaurants.map(r => r.id));
-    const updatedRestaurants = [...restaurants];
-    initialRestaurantsData.forEach(initialRestaurant => {
-      if (!existingIds.has(initialRestaurant.id)) {
-        updatedRestaurants.push(initialRestaurant);
+  // Also check if dataAiHint needs update
+  let needsUpdate = restaurants.length < initialRestaurantsData.length;
+  if (!needsUpdate) {
+    for (const initialRestaurant of initialRestaurantsData) {
+      const storedRestaurant = restaurants.find(r => r.id === initialRestaurant.id);
+      if (storedRestaurant && storedRestaurant.dataAiHint !== initialRestaurant.dataAiHint) {
+        needsUpdate = true;
+        break;
+      }
+    }
+  }
+
+  if (needsUpdate && typeof window !== 'undefined') {
+    const updatedRestaurants = [...initialRestaurantsData]; // Start with fresh data
+    const initialIds = new Set(initialRestaurantsData.map(r => r.id));
+
+    // Merge any user-specific changes (like AI suggestions) from old stored data
+    // for restaurants that still exist in the new initial data.
+    restaurants.forEach(storedRestaurant => {
+      if (initialIds.has(storedRestaurant.id)) {
+        const targetIndex = updatedRestaurants.findIndex(ur => ur.id === storedRestaurant.id);
+        if (targetIndex !== -1) {
+          // Preserve AI suggestions if they exist on stored restaurant
+          updatedRestaurants[targetIndex] = {
+            ...initialRestaurantsData.find(ir => ir.id === storedRestaurant.id)!, // Get latest static data
+            aiSuggestedDescription: storedRestaurant.aiSuggestedDescription || updatedRestaurants[targetIndex].aiSuggestedDescription,
+            aiReasoning: storedRestaurant.aiReasoning || updatedRestaurants[targetIndex].aiReasoning,
+          };
+        }
       }
     });
     setItems<Restaurant>(RESTAURANTS_KEY, updatedRestaurants);
@@ -171,17 +195,40 @@ if (typeof window !== 'undefined') {
     if (!localStorage.getItem(RESTAURANTS_KEY)) {
         localStorage.setItem(RESTAURANTS_KEY, JSON.stringify(initialRestaurantsData));
     } else {
-        // Check if existing data needs update (simple check for the first restaurant name)
+        // Check if existing data needs update (simple check for the first restaurant name or count or hint change)
         const storedRestaurants = JSON.parse(localStorage.getItem(RESTAURANTS_KEY) || '[]') as Restaurant[];
-        if (storedRestaurants.length > 0 && storedRestaurants[0].id === '1' && storedRestaurants[0].name === 'Hotel Shivaratna') {
-            localStorage.setItem(RESTAURANTS_KEY, JSON.stringify(initialRestaurantsData));
-        } else if (storedRestaurants.length < initialRestaurantsData.length) {
-            // If fewer restaurants in storage than in initial data, update storage
-            const existingIds = new Set(storedRestaurants.map(r => r.id));
-            const updatedRestaurants = [...storedRestaurants];
-            initialRestaurantsData.forEach(initialRestaurant => {
-              if (!existingIds.has(initialRestaurant.id)) {
-                updatedRestaurants.push(initialRestaurant);
+        let needsRestaurantUpdate = storedRestaurants.length < initialRestaurantsData.length;
+        if (!needsRestaurantUpdate) {
+            const firstInitialRestaurant = initialRestaurantsData.find(r => r.id === '1');
+            const firstStoredRestaurant = storedRestaurants.find(r => r.id === '1');
+            if (firstStoredRestaurant && firstInitialRestaurant && 
+                (firstStoredRestaurant.name === 'Hotel Shivaratna' || firstStoredRestaurant.dataAiHint !== firstInitialRestaurant.dataAiHint)) {
+                needsRestaurantUpdate = true;
+            }
+            if (!needsRestaurantUpdate) { // Check all hints if names and count are okay
+                 for (const initialRestaurant of initialRestaurantsData) {
+                    const storedRestaurant = storedRestaurants.find(r => r.id === initialRestaurant.id);
+                    if (storedRestaurant && storedRestaurant.dataAiHint !== initialRestaurant.dataAiHint) {
+                        needsRestaurantUpdate = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (needsRestaurantUpdate) {
+            const updatedRestaurants = [...initialRestaurantsData];
+            const initialIds = new Set(initialRestaurantsData.map(r => r.id));
+            storedRestaurants.forEach(storedRestaurant => {
+              if (initialIds.has(storedRestaurant.id)) {
+                const targetIndex = updatedRestaurants.findIndex(ur => ur.id === storedRestaurant.id);
+                if (targetIndex !== -1) {
+                  updatedRestaurants[targetIndex] = {
+                    ...initialRestaurantsData.find(ir => ir.id === storedRestaurant.id)!,
+                    aiSuggestedDescription: storedRestaurant.aiSuggestedDescription || updatedRestaurants[targetIndex].aiSuggestedDescription,
+                    aiReasoning: storedRestaurant.aiReasoning || updatedRestaurants[targetIndex].aiReasoning,
+                  };
+                }
               }
             });
             localStorage.setItem(RESTAURANTS_KEY, JSON.stringify(updatedRestaurants));
